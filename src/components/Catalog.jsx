@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, forwardRef } from 'react'
+import ProductCard from './ProductCard'
 
 const API = import.meta.env.VITE_BACKEND_URL
 
-export default function Catalog() {
+const Catalog = forwardRef(function Catalog({ onAdd }, ref) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [category, setCategory] = useState('')
@@ -25,7 +26,7 @@ export default function Catalog() {
   }, [category])
 
   return (
-    <section id="catalog" className="max-w-7xl mx-auto px-6 py-16">
+    <section id="catalog" ref={ref} className="max-w-7xl mx-auto px-6 py-16">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">All Products</h2>
         <select value={category} onChange={(e) => setCategory(e.target.value)} className="border rounded-full px-4 py-2 text-sm">
@@ -42,20 +43,12 @@ export default function Catalog() {
       ) : (
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((p) => (
-            <article key={p.id} className="group">
-              <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-100">
-                <img src={p.images?.[0]?.url || 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246'} alt={p.images?.[0]?.alt || p.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
-              </div>
-              <div className="mt-3">
-                <h3 className="font-medium text-zinc-900">{p.title}</h3>
-                <p className="text-zinc-500 text-sm">{p.category}</p>
-                <p className="mt-1 font-semibold">${p.price.toFixed(2)}</p>
-                <button className="mt-3 text-sm px-4 py-2 rounded-full border hover:bg-zinc-50">Add to bag</button>
-              </div>
-            </article>
+            <ProductCard key={p.id} product={p} onAdd={onAdd} />
           ))}
         </div>
       )}
     </section>
   )
-}
+})
+
+export default Catalog

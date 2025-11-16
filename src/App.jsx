@@ -1,41 +1,48 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Hero from './components/Hero'
 import Featured from './components/Featured'
 import Catalog from './components/Catalog'
 import Footer from './components/Footer'
+import Background from './components/Background'
+import Navbar from './components/Navbar'
+import Marquee from './components/Marquee'
+import BagDrawer from './components/BagDrawer'
 
 function App() {
   const catalogRef = useRef(null)
+  const [bagOpen, setBagOpen] = useState(false)
+  const [bagItems, setBagItems] = useState([])
 
   const scrollToCatalog = () => {
     const el = document.getElementById('catalog')
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const handleAdd = (product) => {
+    setBagItems((prev) => [...prev, product])
+    setBagOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-white text-zinc-900">
-      <header className="sticky top-0 z-30 backdrop-blur bg-white/70 border-b">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="#" className="font-serif text-xl tracking-wide">Lapiòzo</a>
-          <nav className="hidden sm:flex items-center gap-6 text-sm text-zinc-600">
-            <a href="#featured" className="hover:text-black">Featured</a>
-            <a href="#catalog" className="hover:text-black">Shop</a>
-            <a href="#" className="hover:text-black">About</a>
-          </nav>
-          <div className="flex items-center gap-3">
-            <button className="px-3 py-1 rounded-full border hover:bg-zinc-50 text-sm">Sign in</button>
-            <button className="px-3 py-1 rounded-full bg-black text-white text-sm">Bag (0)</button>
-          </div>
-        </div>
-      </header>
+      <Background />
+      <Navbar onShop={() => setBagOpen(true)} />
+      <Marquee items={[
+        'Sustainable Italian craftsmanship',
+        'Limited capsule release',
+        'Exclusive online preview',
+        'Complimentary worldwide shipping',
+      ]} />
 
       <main>
         <Hero onShop={scrollToCatalog} />
         <Featured />
-        <Catalog ref={catalogRef} />
+        <Catalog ref={catalogRef} onAdd={handleAdd} />
       </main>
 
       <Footer />
+
+      <BagDrawer open={bagOpen} onClose={() => setBagOpen(false)} items={bagItems} />
     </div>
   )
 }
